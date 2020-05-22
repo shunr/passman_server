@@ -1,15 +1,28 @@
-FROM python:3.8
+FROM golang:1.14-buster
 
-EXPOSE 443
+RUN apt-get update -y && apt-get install -y libpq-dev postgresql-client unzip
 
-RUN apt-get update -y && apt-get install -y libpq-dev postgresql-client
+WORKDIR /tmp
+
+# Install protoc
+RUN PROTOC_ZIP=protoc-3.7.1-linux-x86_64.zip && \
+    curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/$PROTOC_ZIP && \
+    unzip -o $PROTOC_ZIP -d /usr/local bin/protoc && \
+    unzip -o $PROTOC_ZIP -d /usr/local 'include/*' && \
+    rm -f $PROTOC_ZIP
 
 WORKDIR /passman_server
 
-COPY requirements.txt ./
+COPY go.mod .
+COPY go.sum .
 
-RUN pip install -r requirements.txt
-
+RUN go get github.com/golang/protobuf/protoc-gen-go
+RUN go mod download
 COPY . ./
 
+RUN ./build.sh
+
+ENV SERVER_PORT 13222
+EXPOSE $SERVER_PORT
+EXPOSE 13222
 CMD ./start.sh

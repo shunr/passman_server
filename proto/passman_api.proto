@@ -1,0 +1,19 @@
+
+syntax = "proto3";
+
+option go_package = "github.com/shunr/passman/protobuf";
+package proto;
+
+service Passman {
+  rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {}
+}
+
+message CreateAccountRequest {
+  string username = 1;
+  bytes auth_salt = 2;
+  bytes muk_salt = 3;
+  bytes auth_verifier = 4;
+  string display_name = 5;
+}
+
+message CreateAccountResponse { string username = 1; }

@@ -21,5 +21,4 @@ PGPASSWORD=$POSTGRES_PASSWORD psql \
     -d $POSTGRES_DB \
     --set ON_ERROR_STOP=on
 
-# Start server
-gunicorn --bind 0.0.0.0:443 server:app --timeout 60
+go run github.com/shunr/passman_server --port $SERVER_PORT
